@@ -16,7 +16,7 @@ enum FilterType {
      NORMAL = 'normal',
 }
 
-interface ForexData {
+type ForexData = {
      success: boolean
      timestamp: number
      base: string
@@ -26,6 +26,8 @@ interface ForexData {
 
 type SortKey = 'currency' | 'original' | 'new'
 type SortDirection = 'asc' | 'desc'
+
+type Filter = [string, number][]
 
 interface Rates {
      [key: string]: number
@@ -48,7 +50,7 @@ export default function Home() {
      const [hasError, setHasError] = useState(false)
 
      // filtered data
-     const filtered = Object.entries(forexData.rates)
+     const filtered: Filter = Object.entries(forexData.rates)
           .filter(([currency, rate]) => {
                const matchesFilter = filterType === FilterType.ALL || (filterType === FilterType.EVEN && isEvenNumber(rate)) || (filterType === FilterType.NORMAL && !isEvenNumber(rate))
                const matchesSearch = currency.toLowerCase().includes(search.toLowerCase())
@@ -67,8 +69,11 @@ export default function Home() {
           })
 
      // calculate total row per page
-     const totalPage = Math.max(1, Math.ceil(filtered.length / (itemsPerPage === 'ALL' ? filtered.length : itemsPerPage)))
-     const paginationFiltered = filtered.slice((currentPage - 1) * (itemsPerPage === 'ALL' ? filtered.length : itemsPerPage), currentPage * (itemsPerPage === 'ALL' ? filtered.length : itemsPerPage))
+     const totalPage: number = Math.max(1, Math.ceil(filtered.length / (itemsPerPage === 'ALL' ? filtered.length : itemsPerPage)))
+     const paginationFiltered: Filter = filtered.slice(
+          (currentPage - 1) * (itemsPerPage === 'ALL' ? filtered.length : itemsPerPage),
+          currentPage * (itemsPerPage === 'ALL' ? filtered.length : itemsPerPage)
+     )
 
      const toggleSort = (key: SortKey) => {
           if (sortKey === key) setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
@@ -78,7 +83,7 @@ export default function Home() {
           }
      }
 
-     const demoData = {
+     const demoData: ForexData = {
           success: true,
           timestamp: 1744351684,
           base: 'EUR',
@@ -260,9 +265,10 @@ export default function Home() {
      useEffect(() => {
           const fetchRates = async () => {
                try {
-                    const result = await CallApi.getForeignCurrency()
+                    const result = await CallApi.getForeignCurrency<ForexData>()
 
-                    if (!result.success) {
+                    if (result === undefined || !result.success) {
+                         setHasError(true)
                          return
                     }
 
@@ -270,6 +276,7 @@ export default function Home() {
                     setCurrentPage(1)
                     setHasError(false)
                } catch (err) {
+                    console.log('err: ', err)
                     setHasError(true)
                } finally {
                     setLoading(false)

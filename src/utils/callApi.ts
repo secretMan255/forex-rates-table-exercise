@@ -13,7 +13,7 @@ export class CallApi {
           return this.Instance
      }
 
-     public static async getForeignCurrency() {
-          return await AxiosClient.getInstance().get('/latest')
+     public static async getForeignCurrency<T = any>(): Promise<T> {
+          return (await AxiosClient.getInstance().get('/latest')) as T
      }
 }

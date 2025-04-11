@@ -12,7 +12,6 @@ export class AxiosClient {
                     timeout: 10000,
                     headers: {
                          'Content-Type': 'application/json',
-                         // Authorization: `Bearer ${process.env.API_KEY}`,
                          apikey: process.env.NEXT_PUBLIC_API_KEY,
                     },
                     withCredentials: true,
@@ -24,10 +23,11 @@ export class AxiosClient {
                )
 
                this.instance.interceptors.response.use(
-                    (response: AxiosResponse) => response.data,
+                    (response) => response.data as any,
                     (error) => Promise.reject(error)
                )
           }
+
           return this.instance
      }
 }
