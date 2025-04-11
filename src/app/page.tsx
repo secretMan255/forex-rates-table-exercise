@@ -260,7 +260,7 @@ export default function Home() {
      useEffect(() => {
           const fetchRates = async () => {
                try {
-                    const result: ForexData = await CallApi.getForeignCurrency()
+                    const result = await CallApi.getForeignCurrency()
 
                     if (!result.success) {
                          return
@@ -325,7 +325,7 @@ export default function Home() {
                                         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-slate-800"></div>
                                    </div>
                               ) : hasError ? (
-                                   <div className="px-4 pt-4 pb-4">
+                                   <div className="pt-4 pb-4">
                                         <AlertDestructive></AlertDestructive>
                                    </div>
                               ) : (
